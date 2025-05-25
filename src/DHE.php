@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace Tourze\TLSCryptoKeyExchange;
 
-use Tourze\TLSCryptoFactory\CryptoFactory;
 use Tourze\TLSCryptoKeyExchange\Contract\KeyExchangeInterface;
 use Tourze\TLSCryptoKeyExchange\Exception\KeyExchangeException;
 
@@ -164,7 +163,7 @@ class DHE implements KeyExchangeInterface
             if ($peerPubKeyResource === false) {
                 throw new KeyExchangeException('加载DHE公钥失败: ' . openssl_error_string());
             }
-            
+
             $peerPubKeyDetails = openssl_pkey_get_details($peerPubKeyResource);
             if ($peerPubKeyDetails === false || !isset($peerPubKeyDetails['dh']['pub_key'])) {
                  throw new KeyExchangeException('无法获取对端DHE公钥详情: ' . openssl_error_string());
@@ -177,10 +176,9 @@ class DHE implements KeyExchangeInterface
             if ($sharedSecretRaw === false) {
                 throw new KeyExchangeException('DHE共享密钥计算失败 (dh_compute_key): ' . openssl_error_string());
             }
-            
+
             $hashAlgorithm = $options['hash'] ?? self::DEFAULT_HASH;
-            $hash = CryptoFactory::createHash($hashAlgorithm);
-            return $hash->hash($sharedSecretRaw);
+            return hash($hashAlgorithm, $sharedSecretRaw, true);
         } catch (KeyExchangeException $e) {
             throw $e;
         } catch (\Exception $e) {

@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace Tourze\TLSCryptoKeyExchange;
 
-use Tourze\TLSCryptoFactory\CryptoFactory;
 use Tourze\TLSCryptoKeyExchange\Contract\KeyExchangeInterface;
 use Tourze\TLSCryptoKeyExchange\Exception\KeyExchangeException;
 
@@ -199,8 +198,7 @@ class ECDHE implements KeyExchangeInterface
 
             // 对共享密钥进行哈希处理
             $hashAlgorithm = $options['hash'] ?? self::DEFAULT_HASH;
-            $hash = CryptoFactory::createHash($hashAlgorithm);
-            return $hash->hash($sharedSecret);
+            return hash($hashAlgorithm, $sharedSecret, true);
         } catch (\Exception $e) {
             throw new KeyExchangeException('ECDHE共享密钥计算失败: ' . $e->getMessage());
         }
@@ -234,4 +232,4 @@ class ECDHE implements KeyExchangeInterface
             throw new KeyExchangeException('提取EC点数据失败: ' . $e->getMessage());
         }
     }
-} 
+}

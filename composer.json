@@ -5,6 +5,8 @@
   "license": "MIT",
   "require": {
     "php": "^8.1",
+    "ext-hash": "*",
+    "ext-openssl": "*",
     "tourze/tls-common": "0.0.*",
     "tourze/tls-crypto-asymmetric": "0.0.*",
     "tourze/tls-crypto-curves": "0.0.*",
