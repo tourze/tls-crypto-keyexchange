@@ -133,7 +133,7 @@ class DHE implements KeyExchangeInterface
             ];
         } catch (KeyExchangeException $e) {
             throw $e;
-        } catch  (\Throwable $e) {
+        } catch (\Throwable $e) {
             throw new KeyExchangeException('DHE密钥对生成一般性失败: ' . $e->getMessage(), 0, $e);
         }
     }
@@ -181,7 +181,7 @@ class DHE implements KeyExchangeInterface
             return hash($hashAlgorithm, $sharedSecretRaw, true);
         } catch (KeyExchangeException $e) {
             throw $e;
-        } catch  (\Throwable $e) {
+        } catch (\Throwable $e) {
             throw new KeyExchangeException('DHE共享密钥计算一般性失败: ' . $e->getMessage(), 0, $e);
         }
     }
