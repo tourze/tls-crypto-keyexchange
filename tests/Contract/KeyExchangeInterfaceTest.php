@@ -68,7 +68,7 @@ class KeyExchangeInterfaceTest extends TestCase
             $this->assertArrayHasKey('publicKey', $keyPair);
             $this->assertNotEmpty($keyPair['privateKey']);
             $this->assertNotEmpty($keyPair['publicKey']);
-        } catch (\Exception $e) {
+        } catch  (\Throwable $e) {
             if ($keyExchange->getName() === 'x448') {
                 // X448 预期会抛出异常，因为当前环境不支持
                 $this->markTestSkipped('X448 当前不支持密钥对生成');
@@ -104,7 +104,7 @@ class KeyExchangeInterfaceTest extends TestCase
             // 验证双方计算的共享密钥相同
             $this->assertEquals($sharedSecret1, $sharedSecret2);
             $this->assertNotEmpty($sharedSecret1);
-        } catch (\Exception $e) {
+        } catch  (\Throwable $e) {
             if ($keyExchange->getName() === 'x448') {
                 // X448 预期会抛出异常，因为当前环境不支持
                 $this->markTestSkipped('X448 当前不支持共享密钥计算');
@@ -140,7 +140,7 @@ class KeyExchangeInterfaceTest extends TestCase
             // 这个测试只是验证不同的实现在相同输入上产生不同的输出
             // 实际应用中，不应该在不同算法间混用密钥
             $this->assertNotSame($implementation1->getName(), $implementation2->getName());
-        } catch (\Exception $e) {
+        } catch  (\Throwable $e) {
             $this->markTestSkipped('无法为多种密钥交换算法生成密钥对：' . $e->getMessage());
         }
     }

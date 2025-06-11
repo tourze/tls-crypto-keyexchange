@@ -57,7 +57,7 @@ class ECDHE implements KeyExchangeInterface
             if ($supportedCurves === false) {
                 throw new KeyExchangeException('无法获取支持的椭圆曲线列表');
             }
-        } catch (\Exception $e) {
+        } catch  (\Throwable $e) {
             throw new KeyExchangeException('获取支持的椭圆曲线失败: ' . $e->getMessage());
         }
 
@@ -102,7 +102,7 @@ class ECDHE implements KeyExchangeInterface
             ];
         } catch (KeyExchangeException $e) {
             throw $e;
-        } catch (\Exception $e) {
+        } catch  (\Throwable $e) {
             throw new KeyExchangeException('ECDHE密钥对生成失败: ' . $e->getMessage());
         }
     }
@@ -199,7 +199,7 @@ class ECDHE implements KeyExchangeInterface
             // 对共享密钥进行哈希处理
             $hashAlgorithm = $options['hash'] ?? self::DEFAULT_HASH;
             return hash($hashAlgorithm, $sharedSecret, true);
-        } catch (\Exception $e) {
+        } catch  (\Throwable $e) {
             throw new KeyExchangeException('ECDHE共享密钥计算失败: ' . $e->getMessage());
         }
     }
@@ -228,7 +228,7 @@ class ECDHE implements KeyExchangeInterface
             $ecPoint = "\x04" . $details['ec']['x'] . $details['ec']['y'];
 
             return $ecPoint;
-        } catch (\Exception $e) {
+        } catch  (\Throwable $e) {
             throw new KeyExchangeException('提取EC点数据失败: ' . $e->getMessage());
         }
     }

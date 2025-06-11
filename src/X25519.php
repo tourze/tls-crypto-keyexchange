@@ -43,7 +43,7 @@ class X25519 implements KeyExchangeInterface
                 'privateKey' => $privateKey,
                 'publicKey' => $publicKey,
             ];
-        } catch (\Exception $e) {
+        } catch  (\Throwable $e) {
             throw new KeyExchangeException('X25519密钥对生成失败: ' . $e->getMessage());
         }
     }

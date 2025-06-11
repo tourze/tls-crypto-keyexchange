@@ -53,7 +53,7 @@ class X448 implements KeyExchangeInterface
                 'publicKey' => $publicKey,
             ];
             */
-        } catch (\Exception $e) {
+        } catch  (\Throwable $e) {
             throw new KeyExchangeException('X448密钥对生成失败: ' . $e->getMessage());
         }
     }
@@ -93,7 +93,7 @@ class X448 implements KeyExchangeInterface
             $sharedSecret = ParagonIE_Sodium_Compat::crypto_scalarmult_ristretto448($privateKey, $publicKey);
             return $sharedSecret;
             */
-        } catch (\Exception $e) {
+        } catch  (\Throwable $e) {
             throw new KeyExchangeException('X448共享密钥计算失败: ' . $e->getMessage());
         }
     }
