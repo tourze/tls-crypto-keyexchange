@@ -45,41 +45,6 @@ class RSAKeyExchangeTest extends TestCase
     public function testEncryptPreMasterSecret(): void
     {
         $this->markTestSkipped('跳过需要OpenSSL密钥生成的测试');
-        
-        // 生成测试用RSA密钥对
-        $keyPair = openssl_pkey_new([
-            'private_key_bits' => 2048,
-            'private_key_type' => OPENSSL_KEYTYPE_RSA,
-        ]);
-        
-        // 提取公钥
-        $keyDetails = openssl_pkey_get_details($keyPair);
-        $publicKey = $keyDetails['key'];
-        
-        // 提取私钥
-        openssl_pkey_export($keyPair, $privateKey);
-        
-        $exchange = new RSAKeyExchange();
-        $exchange->setServerPublicKey($publicKey);
-        
-        // 生成预主密钥
-        $preMasterSecret = $exchange->generatePreMasterSecret(0x0303);
-        
-        // 加密预主密钥
-        $encryptedPreMasterSecret = $exchange->encryptPreMasterSecret();
-        
-        // 验证加密结果不为空
-        $this->assertNotEmpty($encryptedPreMasterSecret);
-        
-        // 验证加密结果与原始预主密钥不同
-        $this->assertNotEquals($preMasterSecret, $encryptedPreMasterSecret);
-        
-        // 使用私钥解密验证
-        $decrypted = '';
-        $result = openssl_private_decrypt($encryptedPreMasterSecret, $decrypted, $privateKey, OPENSSL_PKCS1_PADDING);
-        
-        $this->assertTrue($result);
-        $this->assertEquals($preMasterSecret, $decrypted);
     }
     
     /**
@@ -88,35 +53,6 @@ class RSAKeyExchangeTest extends TestCase
     public function testDecryptPreMasterSecret(): void
     {
         $this->markTestSkipped('跳过需要OpenSSL密钥生成的测试');
-        
-        // 生成测试用RSA密钥对
-        $keyPair = openssl_pkey_new([
-            'private_key_bits' => 2048,
-            'private_key_type' => OPENSSL_KEYTYPE_RSA,
-        ]);
-        
-        // 提取公钥
-        $keyDetails = openssl_pkey_get_details($keyPair);
-        $publicKey = $keyDetails['key'];
-        
-        // 提取私钥
-        openssl_pkey_export($keyPair, $privateKey);
-        
-        $exchange = new RSAKeyExchange();
-        $exchange->setServerPublicKey($publicKey);
-        
-        // 生成预主密钥
-        $originalPreMasterSecret = $exchange->generatePreMasterSecret(0x0303);
-        
-        // 加密预主密钥
-        $encryptedPreMasterSecret = $exchange->encryptPreMasterSecret();
-        
-        // 测试解密
-        $decryptedPreMasterSecret = $exchange->decryptPreMasterSecret($encryptedPreMasterSecret, $privateKey);
-        
-        // 验证解密结果与原始预主密钥相同
-        $this->assertEquals($originalPreMasterSecret, $decryptedPreMasterSecret);
-        $this->assertEquals($originalPreMasterSecret, $exchange->getPreMasterSecret());
     }
     
     /**

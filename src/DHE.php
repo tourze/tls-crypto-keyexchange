@@ -141,8 +141,8 @@ class DHE implements KeyExchangeInterface
     /**
      * 计算共享密钥
      *
-     * @param string $privateKey 本方私钥 (PEM格式)
-     * @param string $publicKey 对方公钥 (PEM格式)
+     * @param string $privateKeyPem 本方私钥 (PEM格式)
+     * @param string $publicKeyPem 对方公钥 (PEM格式)
      * @param array $options 计算选项
      * @return string 共享密钥
      * @throws KeyExchangeException 如果计算共享密钥失败

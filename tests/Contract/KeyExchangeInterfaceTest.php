@@ -62,8 +62,6 @@ class KeyExchangeInterfaceTest extends TestCase
     {
         try {
             $keyPair = $keyExchange->generateKeyPair();
-            
-            $this->assertIsArray($keyPair);
             $this->assertArrayHasKey('privateKey', $keyPair);
             $this->assertArrayHasKey('publicKey', $keyPair);
             $this->assertNotEmpty($keyPair['privateKey']);
