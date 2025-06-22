@@ -17,7 +17,7 @@ class KeyExchangeInterfaceTest extends TestCase
 {
     /**
      * 获取可以执行测试的密钥交换实现类列表
-     * 
+     *
      * @return array 由密钥交换实现类组成的数组
      */
     public function keyExchangeImplementationsProvider(): array
@@ -45,7 +45,7 @@ class KeyExchangeInterfaceTest extends TestCase
     
     /**
      * 测试所有实现类都正确实现了 getName 方法
-     * 
+     *
      * @dataProvider keyExchangeImplementationsProvider
      */
     public function test_allImplementations_correctlyImplementGetName(KeyExchangeInterface $keyExchange, string $expectedName): void
@@ -55,7 +55,7 @@ class KeyExchangeInterfaceTest extends TestCase
     
     /**
      * 测试所有实现类都正确实现了 generateKeyPair 方法
-     * 
+     *
      * @dataProvider keyExchangeImplementationsProvider
      */
     public function test_allImplementations_correctlyImplementGenerateKeyPair(KeyExchangeInterface $keyExchange): void
@@ -78,7 +78,7 @@ class KeyExchangeInterfaceTest extends TestCase
     
     /**
      * 测试所有实现类都正确实现了 computeSharedSecret 方法
-     * 
+     *
      * @dataProvider keyExchangeImplementationsProvider
      */
     public function test_allImplementations_correctlyImplementComputeSharedSecret(KeyExchangeInterface $keyExchange): void

@@ -13,7 +13,7 @@ class KeyExchangeFactory
 {
     /**
      * 创建密钥交换实例
-     * 
+     *
      * @param string $type 密钥交换类型（"RSA", "DHE", "ECDHE", "PSK", "TLS13"）
      * @return KeyExchangeInterface 密钥交换实例
      * @throws \InvalidArgumentException 如果类型不支持
@@ -32,7 +32,7 @@ class KeyExchangeFactory
     
     /**
      * 根据加密套件创建密钥交换实例
-     * 
+     *
      * @param string $cipherSuite 加密套件名称
      * @param int $tlsVersion TLS版本
      * @return KeyExchangeInterface 密钥交换实例

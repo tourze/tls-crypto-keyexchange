@@ -13,42 +13,42 @@ class ECDHEKeyExchange implements KeyExchangeInterface
 {
     /**
      * 椭圆曲线类型
-     * 
+     *
      * @var string
      */
     private string $curve = '';
     
     /**
      * 服务器ECDH公钥点
-     * 
+     *
      * @var string
      */
     private string $serverPublicKey = '';
     
     /**
      * 客户端ECDH私钥
-     * 
+     *
      * @var string
      */
     private string $clientPrivateKey = '';
     
     /**
      * 客户端ECDH公钥点
-     * 
+     *
      * @var string
      */
     private string $clientPublicKey = '';
     
     /**
      * 预主密钥
-     * 
+     *
      * @var string
      */
     private string $preMasterSecret = '';
     
     /**
      * 常见的椭圆曲线组
-     * 
+     *
      * @var array<string, string>
      */
     private static array $CURVE_MAP = [
@@ -60,7 +60,7 @@ class ECDHEKeyExchange implements KeyExchangeInterface
     
     /**
      * 设置椭圆曲线参数
-     * 
+     *
      * @param string $curve 椭圆曲线类型
      * @param string $serverPublicKey 服务器ECDH公钥点
      * @return self
@@ -79,7 +79,7 @@ class ECDHEKeyExchange implements KeyExchangeInterface
     
     /**
      * 获取椭圆曲线类型
-     * 
+     *
      * @return string 椭圆曲线类型
      */
     public function getCurve(): string
@@ -89,7 +89,7 @@ class ECDHEKeyExchange implements KeyExchangeInterface
     
     /**
      * 获取服务器ECDH公钥
-     * 
+     *
      * @return string 服务器ECDH公钥
      */
     public function getServerPublicKey(): string
@@ -99,7 +99,7 @@ class ECDHEKeyExchange implements KeyExchangeInterface
     
     /**
      * 生成客户端密钥对
-     * 
+     *
      * @return string 客户端ECDH公钥
      * @throws \RuntimeException 如果生成密钥对失败
      */
@@ -144,9 +144,9 @@ class ECDHEKeyExchange implements KeyExchangeInterface
     
     /**
      * 计算预主密钥
-     * 
+     *
      * 使用服务器公钥和客户端私钥计算共享密钥
-     * 
+     *
      * @return string 预主密钥
      * @throws \RuntimeException 如果计算失败
      */
@@ -189,7 +189,7 @@ class ECDHEKeyExchange implements KeyExchangeInterface
     
     /**
      * 获取预主密钥
-     * 
+     *
      * @return string 预主密钥
      */
     public function getPreMasterSecret(): string
@@ -199,7 +199,7 @@ class ECDHEKeyExchange implements KeyExchangeInterface
     
     /**
      * 获取客户端公钥
-     * 
+     *
      * @return string 客户端公钥
      */
     public function getClientPublicKey(): string

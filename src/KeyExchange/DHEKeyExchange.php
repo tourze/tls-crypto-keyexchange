@@ -13,49 +13,49 @@ class DHEKeyExchange implements KeyExchangeInterface
 {
     /**
      * DH素数p
-     * 
+     *
      * @var string
      */
     private string $p = '';
     
     /**
      * DH生成元g
-     * 
+     *
      * @var string
      */
     private string $g = '';
     
     /**
      * 服务器DH公钥Ys
-     * 
+     *
      * @var string
      */
     private string $serverPublicKey = '';
     
     /**
      * 客户端DH私钥Xc
-     * 
+     *
      * @var string
      */
     private string $clientPrivateKey = '';
     
     /**
      * 客户端DH公钥Yc
-     * 
+     *
      * @var string
      */
     private string $clientPublicKey = '';
     
     /**
      * 预主密钥
-     * 
+     *
      * @var string
      */
     private string $preMasterSecret = '';
     
     /**
      * 设置DH参数
-     * 
+     *
      * @param string $p 素数p（大整数，通常为512-2048位）
      * @param string $g 生成元g（通常为2或5）
      * @param string $serverPublicKey 服务器DH公钥
@@ -71,7 +71,7 @@ class DHEKeyExchange implements KeyExchangeInterface
     
     /**
      * 获取DH素数p
-     * 
+     *
      * @return string DH素数p
      */
     public function getP(): string
@@ -81,7 +81,7 @@ class DHEKeyExchange implements KeyExchangeInterface
     
     /**
      * 获取DH生成元g
-     * 
+     *
      * @return string DH生成元g
      */
     public function getG(): string
@@ -91,7 +91,7 @@ class DHEKeyExchange implements KeyExchangeInterface
     
     /**
      * 获取服务器DH公钥
-     * 
+     *
      * @return string 服务器DH公钥
      */
     public function getServerPublicKey(): string
@@ -101,7 +101,7 @@ class DHEKeyExchange implements KeyExchangeInterface
     
     /**
      * 生成客户端密钥对
-     * 
+     *
      * @return string 客户端DH公钥
      * @throws \RuntimeException 如果生成密钥对失败
      */
@@ -141,9 +141,9 @@ class DHEKeyExchange implements KeyExchangeInterface
     
     /**
      * 计算预主密钥
-     * 
+     *
      * 使用服务器公钥和客户端私钥计算共享密钥
-     * 
+     *
      * @return string 预主密钥
      * @throws \RuntimeException 如果计算失败
      */
@@ -199,7 +199,7 @@ class DHEKeyExchange implements KeyExchangeInterface
     
     /**
      * 获取预主密钥
-     * 
+     *
      * @return string 预主密钥
      */
     public function getPreMasterSecret(): string
@@ -209,7 +209,7 @@ class DHEKeyExchange implements KeyExchangeInterface
     
     /**
      * 获取客户端公钥
-     * 
+     *
      * @return string 客户端公钥
      */
     public function getClientPublicKey(): string
@@ -219,7 +219,7 @@ class DHEKeyExchange implements KeyExchangeInterface
     
     /**
      * 将十六进制字符串转换为二进制数据
-     * 
+     *
      * @param string $hex 十六进制字符串
      * @return string 二进制数据
      */
@@ -239,7 +239,7 @@ class DHEKeyExchange implements KeyExchangeInterface
     
     /**
      * 将二进制数据转换为十六进制字符串
-     * 
+     *
      * @param string $bin 二进制数据
      * @return string 十六进制字符串
      */

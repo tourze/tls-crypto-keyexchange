@@ -13,21 +13,21 @@ class RSAKeyExchange implements KeyExchangeInterface
 {
     /**
      * 服务器公钥
-     * 
+     *
      * @var string
      */
     private string $serverPublicKey = '';
     
     /**
      * 客户端预主密钥
-     * 
+     *
      * @var string
      */
     private string $preMasterSecret = '';
     
     /**
      * 设置服务器公钥
-     * 
+     *
      * @param string $publicKey 服务器公钥（PEM或DER格式）
      * @return self
      */
@@ -39,7 +39,7 @@ class RSAKeyExchange implements KeyExchangeInterface
     
     /**
      * 获取服务器公钥
-     * 
+     *
      * @return string 服务器公钥
      */
     public function getServerPublicKey(): string
@@ -49,9 +49,9 @@ class RSAKeyExchange implements KeyExchangeInterface
     
     /**
      * 生成预主密钥
-     * 
+     *
      * 在RSA密钥交换中，客户端生成随机的预主密钥
-     * 
+     *
      * @param int $version TLS版本（用于放入预主密钥的前两个字节）
      * @return string 生成的预主密钥
      */
@@ -69,9 +69,9 @@ class RSAKeyExchange implements KeyExchangeInterface
     
     /**
      * 加密预主密钥
-     * 
+     *
      * 使用服务器公钥加密预主密钥
-     * 
+     *
      * @return string 加密后的预主密钥
      * @throws \RuntimeException 如果加密失败
      */
@@ -104,7 +104,7 @@ class RSAKeyExchange implements KeyExchangeInterface
     
     /**
      * 解密预主密钥（服务器端）
-     * 
+     *
      * @param string $encryptedPreMasterSecret 加密的预主密钥
      * @param string $privateKey 服务器私钥
      * @return string 解密后的预主密钥
@@ -132,7 +132,7 @@ class RSAKeyExchange implements KeyExchangeInterface
     
     /**
      * 获取预主密钥
-     * 
+     *
      * @return string 预主密钥
      */
     public function getPreMasterSecret(): string

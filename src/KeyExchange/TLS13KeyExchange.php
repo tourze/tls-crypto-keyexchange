@@ -14,14 +14,14 @@ class TLS13KeyExchange implements KeyExchangeInterface
 {
     /**
      * 密钥共享组类型
-     * 
+     *
      * @var string
      */
     private string $group = '';
     
     /**
      * 支持的组类型
-     * 
+     *
      * @var array<string, string>
      */
     private static array $GROUP_MAP = [
@@ -34,35 +34,35 @@ class TLS13KeyExchange implements KeyExchangeInterface
     
     /**
      * 服务器密钥共享数据
-     * 
+     *
      * @var string
      */
     private string $serverKeyShare = '';
     
     /**
      * 客户端私钥
-     * 
+     *
      * @var string
      */
     private string $clientPrivateKey = '';
     
     /**
      * 客户端密钥共享数据
-     * 
+     *
      * @var string
      */
     private string $clientKeyShare = '';
     
     /**
      * 共享密钥
-     * 
+     *
      * @var string
      */
     private string $sharedSecret = '';
     
     /**
      * 设置密钥共享参数
-     * 
+     *
      * @param string $group 密钥共享组类型
      * @param string $serverKeyShare 服务器密钥共享数据
      * @return self
@@ -81,7 +81,7 @@ class TLS13KeyExchange implements KeyExchangeInterface
     
     /**
      * 获取组类型
-     * 
+     *
      * @return string 组类型
      */
     public function getGroup(): string
@@ -91,7 +91,7 @@ class TLS13KeyExchange implements KeyExchangeInterface
     
     /**
      * 获取服务器密钥共享数据
-     * 
+     *
      * @return string 服务器密钥共享数据
      */
     public function getServerKeyShare(): string
@@ -101,7 +101,7 @@ class TLS13KeyExchange implements KeyExchangeInterface
     
     /**
      * 生成客户端密钥共享
-     * 
+     *
      * @return string 客户端密钥共享数据
      * @throws \RuntimeException 如果生成失败
      */
@@ -166,7 +166,7 @@ class TLS13KeyExchange implements KeyExchangeInterface
     
     /**
      * 计算共享密钥
-     * 
+     *
      * @return string 共享密钥
      * @throws \RuntimeException 如果计算失败
      */
@@ -218,9 +218,9 @@ class TLS13KeyExchange implements KeyExchangeInterface
     
     /**
      * 获取预主密钥
-     * 
+     *
      * 在TLS 1.3中，共享密钥就是预主密钥
-     * 
+     *
      * @return string 预主密钥
      */
     public function getPreMasterSecret(): string
@@ -230,7 +230,7 @@ class TLS13KeyExchange implements KeyExchangeInterface
     
     /**
      * 获取客户端密钥共享数据
-     * 
+     *
      * @return string 客户端密钥共享数据
      */
     public function getClientKeyShare(): string
@@ -240,9 +240,9 @@ class TLS13KeyExchange implements KeyExchangeInterface
     
     /**
      * 格式化密钥共享扩展数据
-     * 
+     *
      * 用于在ClientHello扩展中发送
-     * 
+     *
      * @return string 格式化的密钥共享扩展数据
      * @throws \RuntimeException 如果密钥共享未生成
      */
@@ -262,7 +262,7 @@ class TLS13KeyExchange implements KeyExchangeInterface
     
     /**
      * 获取组ID
-     * 
+     *
      * @param string $group 组名称
      * @return int 组ID
      * @throws \InvalidArgumentException 如果组不支持

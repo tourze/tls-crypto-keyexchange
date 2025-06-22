@@ -13,7 +13,7 @@ interface KeyExchangeInterface
 {
     /**
      * 获取预主密钥
-     * 
+     *
      * @return string 预主密钥
      */
     public function getPreMasterSecret(): string;

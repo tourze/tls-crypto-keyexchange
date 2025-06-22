@@ -13,28 +13,28 @@ class PSKKeyExchange implements KeyExchangeInterface
 {
     /**
      * PSK身份
-     * 
+     *
      * @var string
      */
     private string $identity = '';
     
     /**
      * 预共享密钥
-     * 
+     *
      * @var string
      */
     private string $psk = '';
     
     /**
      * 预主密钥
-     * 
+     *
      * @var string
      */
     private string $preMasterSecret = '';
     
     /**
      * 设置PSK身份和密钥
-     * 
+     *
      * @param string $identity PSK身份
      * @param string $psk 预共享密钥
      * @return self
@@ -48,7 +48,7 @@ class PSKKeyExchange implements KeyExchangeInterface
     
     /**
      * 获取PSK身份
-     * 
+     *
      * @return string PSK身份
      */
     public function getIdentity(): string
@@ -58,10 +58,10 @@ class PSKKeyExchange implements KeyExchangeInterface
     
     /**
      * 生成预主密钥
-     * 
+     *
      * PSK预主密钥格式：
      * 纯PSK: 0x00 + PSK长度（两个字节）+ 0x00 + PSK
-     * 
+     *
      * @return string 生成的预主密钥
      * @throws \RuntimeException 如果PSK未设置
      */
@@ -86,7 +86,7 @@ class PSKKeyExchange implements KeyExchangeInterface
     
     /**
      * 获取预主密钥
-     * 
+     *
      * @return string 预主密钥
      */
     public function getPreMasterSecret(): string
@@ -96,9 +96,9 @@ class PSKKeyExchange implements KeyExchangeInterface
     
     /**
      * 格式化PSK身份为二进制格式
-     * 
+     *
      * 用于在ClientKeyExchange消息中发送
-     * 
+     *
      * @return string 格式化的PSK身份
      * @throws \RuntimeException 如果身份未设置
      */
