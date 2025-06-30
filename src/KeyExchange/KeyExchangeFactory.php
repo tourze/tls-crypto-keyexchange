@@ -4,9 +4,11 @@ declare(strict_types=1);
 
 namespace Tourze\TLSCryptoKeyExchange\KeyExchange;
 
+use Tourze\TLSCryptoKeyExchange\Exception\UnsupportedKeyExchangeException;
+
 /**
  * 密钥交换工厂类
- * 
+ *
  * 用于创建适合不同加密套件的密钥交换实现
  */
 class KeyExchangeFactory
@@ -16,7 +18,7 @@ class KeyExchangeFactory
      *
      * @param string $type 密钥交换类型（"RSA", "DHE", "ECDHE", "PSK", "TLS13"）
      * @return KeyExchangeInterface 密钥交换实例
-     * @throws \InvalidArgumentException 如果类型不支持
+     * @throws UnsupportedKeyExchangeException 如果类型不支持
      */
     public static function create(string $type): KeyExchangeInterface
     {
@@ -26,7 +28,7 @@ class KeyExchangeFactory
             'ECDHE' => new ECDHEKeyExchange(),
             'PSK' => new PSKKeyExchange(),
             'TLS13' => new TLS13KeyExchange(),
-            default => throw new \InvalidArgumentException("Unsupported key exchange type: $type"),
+            default => throw new UnsupportedKeyExchangeException("Unsupported key exchange type: $type"),
         };
     }
     

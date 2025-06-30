@@ -65,7 +65,7 @@ class KeyExchangeFactoryTest extends TestCase
      */
     public function testCreateUnsupportedTypeThrowsException(): void
     {
-        $this->expectException(\InvalidArgumentException::class);
+        $this->expectException(\Tourze\TLSCryptoKeyExchange\Exception\UnsupportedKeyExchangeException::class);
         $this->expectExceptionMessage('Unsupported key exchange type: INVALID');
 
         KeyExchangeFactory::create('INVALID');

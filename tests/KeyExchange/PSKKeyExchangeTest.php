@@ -74,7 +74,7 @@ class PSKKeyExchangeTest extends TestCase
      */
     public function testGeneratePreMasterSecretWithoutPSKThrowsException(): void
     {
-        $this->expectException(\RuntimeException::class);
+        $this->expectException(\Tourze\TLSCryptoKeyExchange\Exception\InvalidParameterException::class);
         $this->expectExceptionMessage('PSK not set');
         
         $exchange = new PSKKeyExchange();
@@ -86,7 +86,7 @@ class PSKKeyExchangeTest extends TestCase
      */
     public function testFormatIdentityWithoutIdentityThrowsException(): void
     {
-        $this->expectException(\RuntimeException::class);
+        $this->expectException(\Tourze\TLSCryptoKeyExchange\Exception\InvalidParameterException::class);
         $this->expectExceptionMessage('PSK identity not set');
         
         $exchange = new PSKKeyExchange();

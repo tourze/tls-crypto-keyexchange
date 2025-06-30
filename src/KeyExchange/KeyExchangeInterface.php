@@ -6,7 +6,7 @@ namespace Tourze\TLSCryptoKeyExchange\KeyExchange;
 
 /**
  * 密钥交换接口
- * 
+ *
  * 定义所有密钥交换算法必须实现的方法
  */
 interface KeyExchangeInterface

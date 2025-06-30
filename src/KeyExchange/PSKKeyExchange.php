@@ -4,9 +4,11 @@ declare(strict_types=1);
 
 namespace Tourze\TLSCryptoKeyExchange\KeyExchange;
 
+use Tourze\TLSCryptoKeyExchange\Exception\InvalidParameterException;
+
 /**
  * PSK密钥交换实现
- * 
+ *
  * 参考RFC 4279 - TLS 1.2中的PSK密钥交换
  */
 class PSKKeyExchange implements KeyExchangeInterface
@@ -63,12 +65,12 @@ class PSKKeyExchange implements KeyExchangeInterface
      * 纯PSK: 0x00 + PSK长度（两个字节）+ 0x00 + PSK
      *
      * @return string 生成的预主密钥
-     * @throws \RuntimeException 如果PSK未设置
+     * @throws InvalidParameterException 如果PSK未设置
      */
     public function generatePreMasterSecret(): string
     {
         if (empty($this->psk)) {
-            throw new \RuntimeException('PSK not set');
+            throw new InvalidParameterException('PSK not set');
         }
         
         // 生成预主密钥格式：
@@ -100,12 +102,12 @@ class PSKKeyExchange implements KeyExchangeInterface
      * 用于在ClientKeyExchange消息中发送
      *
      * @return string 格式化的PSK身份
-     * @throws \RuntimeException 如果身份未设置
+     * @throws InvalidParameterException 如果身份未设置
      */
     public function formatIdentity(): string
     {
         if (empty($this->identity)) {
-            throw new \RuntimeException('PSK identity not set');
+            throw new InvalidParameterException('PSK identity not set');
         }
         
         // PSK身份长度（2字节）+ PSK身份

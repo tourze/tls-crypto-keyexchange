@@ -4,9 +4,14 @@ declare(strict_types=1);
 
 namespace Tourze\TLSCryptoKeyExchange\KeyExchange;
 
+use Tourze\TLSCryptoKeyExchange\Exception\InvalidCurveException;
+use Tourze\TLSCryptoKeyExchange\Exception\InvalidParameterException;
+use Tourze\TLSCryptoKeyExchange\Exception\KeyGenerationException;
+use Tourze\TLSCryptoKeyExchange\Exception\InvalidKeyException;
+
 /**
  * ECDHE密钥交换实现
- * 
+ *
  * 参考RFC 5246和RFC 4492 - TLS 1.2中的椭圆曲线DH密钥交换
  */
 class ECDHEKeyExchange implements KeyExchangeInterface
@@ -64,12 +69,12 @@ class ECDHEKeyExchange implements KeyExchangeInterface
      * @param string $curve 椭圆曲线类型
      * @param string $serverPublicKey 服务器ECDH公钥点
      * @return self
-     * @throws \InvalidArgumentException 如果曲线类型不支持
+     * @throws InvalidCurveException 如果曲线类型不支持
      */
     public function setECParameters(string $curve, string $serverPublicKey): self
     {
         if (!array_key_exists($curve, self::$CURVE_MAP)) {
-            throw new \InvalidArgumentException("Unsupported elliptic curve: $curve");
+            throw new InvalidCurveException("Unsupported elliptic curve: $curve");
         }
         
         $this->curve = $curve;
@@ -101,12 +106,13 @@ class ECDHEKeyExchange implements KeyExchangeInterface
      * 生成客户端密钥对
      *
      * @return string 客户端ECDH公钥
-     * @throws \RuntimeException 如果生成密钥对失败
+     * @throws InvalidParameterException 如果参数未设置
+     * @throws KeyGenerationException 如果生成密钥对失败
      */
     public function generateClientKeyPair(): string
     {
         if (empty($this->curve) || empty($this->serverPublicKey)) {
-            throw new \RuntimeException('EC parameters not set');
+            throw new InvalidParameterException('EC parameters not set');
         }
         
         $opensslCurve = self::$CURVE_MAP[$this->curve];
@@ -119,13 +125,13 @@ class ECDHEKeyExchange implements KeyExchangeInterface
         
         $key = openssl_pkey_new($config);
         if ($key === false) {
-            throw new \RuntimeException('Failed to create EC key: ' . openssl_error_string());
+            throw new KeyGenerationException('Failed to create EC key: ' . openssl_error_string());
         }
         
         // 获取私钥和公钥
         $result = openssl_pkey_export($key, $privateKeyPem);
         if ($result === false) {
-            throw new \RuntimeException('Failed to export EC private key: ' . openssl_error_string());
+            throw new KeyGenerationException('Failed to export EC private key: ' . openssl_error_string());
         }
         
         $this->clientPrivateKey = $privateKeyPem;
@@ -133,7 +139,7 @@ class ECDHEKeyExchange implements KeyExchangeInterface
         // 提取公钥
         $keyDetails = openssl_pkey_get_details($key);
         if ($keyDetails === false) {
-            throw new \RuntimeException('Failed to get EC key details: ' . openssl_error_string());
+            throw new KeyGenerationException('Failed to get EC key details: ' . openssl_error_string());
         }
         
         $this->clientPublicKey = $keyDetails['key'];
@@ -148,24 +154,26 @@ class ECDHEKeyExchange implements KeyExchangeInterface
      * 使用服务器公钥和客户端私钥计算共享密钥
      *
      * @return string 预主密钥
-     * @throws \RuntimeException 如果计算失败
+     * @throws InvalidParameterException 如果参数缺失
+     * @throws InvalidKeyException 如果密钥加载失败
+     * @throws KeyGenerationException 如果计算失败
      */
     public function computePreMasterSecret(): string
     {
         if (empty($this->clientPrivateKey) || empty($this->serverPublicKey)) {
-            throw new \RuntimeException('Missing parameters for computing pre-master secret');
+            throw new InvalidParameterException('Missing parameters for computing pre-master secret');
         }
         
         // 加载服务器公钥
         $serverKey = openssl_pkey_get_public($this->serverPublicKey);
         if ($serverKey === false) {
-            throw new \RuntimeException('Failed to load server EC public key: ' . openssl_error_string());
+            throw new InvalidKeyException('Failed to load server EC public key: ' . openssl_error_string());
         }
         
         // 加载客户端私钥
         $clientKey = openssl_pkey_get_private($this->clientPrivateKey);
         if ($clientKey === false) {
-            throw new \RuntimeException('Failed to load client EC private key: ' . openssl_error_string());
+            throw new InvalidKeyException('Failed to load client EC private key: ' . openssl_error_string());
         }
         
         // 执行ECDH操作
@@ -175,7 +183,7 @@ class ECDHEKeyExchange implements KeyExchangeInterface
         // 将服务器公钥解析为EC点
         $serverKeyDetails = openssl_pkey_get_details($serverKey);
         if ($serverKeyDetails === false) {
-            throw new \RuntimeException('Failed to get server EC key details: ' . openssl_error_string());
+            throw new KeyGenerationException('Failed to get server EC key details: ' . openssl_error_string());
         }
         
         // 对于实际项目，应使用专门的ECDH库

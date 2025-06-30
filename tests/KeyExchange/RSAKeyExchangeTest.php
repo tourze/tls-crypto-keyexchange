@@ -60,7 +60,7 @@ class RSAKeyExchangeTest extends TestCase
      */
     public function testEncryptWithoutPreMasterSecretThrowsException(): void
     {
-        $this->expectException(\RuntimeException::class);
+        $this->expectException(\Tourze\TLSCryptoKeyExchange\Exception\InvalidParameterException::class);
         $this->expectExceptionMessage('Pre-master secret not generated');
         
         $exchange = new RSAKeyExchange();
@@ -73,7 +73,7 @@ class RSAKeyExchangeTest extends TestCase
      */
     public function testEncryptWithoutServerPublicKeyThrowsException(): void
     {
-        $this->expectException(\RuntimeException::class);
+        $this->expectException(\Tourze\TLSCryptoKeyExchange\Exception\InvalidParameterException::class);
         $this->expectExceptionMessage('Server public key not set');
         
         $exchange = new RSAKeyExchange();

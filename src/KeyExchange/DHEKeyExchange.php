@@ -4,9 +4,12 @@ declare(strict_types=1);
 
 namespace Tourze\TLSCryptoKeyExchange\KeyExchange;
 
+use Tourze\TLSCryptoKeyExchange\Exception\InvalidParameterException;
+use Tourze\TLSCryptoKeyExchange\Exception\KeyGenerationException;
+
 /**
  * DHE密钥交换实现
- * 
+ *
  * 参考RFC 5246 - TLS 1.2中的DHE密钥交换
  */
 class DHEKeyExchange implements KeyExchangeInterface
@@ -103,12 +106,12 @@ class DHEKeyExchange implements KeyExchangeInterface
      * 生成客户端密钥对
      *
      * @return string 客户端DH公钥
-     * @throws \RuntimeException 如果生成密钥对失败
+     * @throws KeyGenerationException 如果生成密钥对失败
      */
     public function generateClientKeyPair(): string
     {
         if (empty($this->p) || empty($this->g) || empty($this->serverPublicKey)) {
-            throw new \RuntimeException('DH parameters not set');
+            throw new InvalidParameterException('DH parameters not set');
         }
         
         // 使用OpenSSL创建DH参数
@@ -123,13 +126,13 @@ class DHEKeyExchange implements KeyExchangeInterface
         ]);
         
         if ($dh === false) {
-            throw new \RuntimeException('Failed to create DH key: ' . openssl_error_string());
+            throw new KeyGenerationException('Failed to create DH key: ' . openssl_error_string());
         }
         
         // 获取私钥和公钥
         $keyData = openssl_pkey_get_details($dh);
         if ($keyData === false) {
-            throw new \RuntimeException('Failed to get DH key details: ' . openssl_error_string());
+            throw new KeyGenerationException('Failed to get DH key details: ' . openssl_error_string());
         }
         
         // 客户端私钥和公钥
@@ -145,12 +148,13 @@ class DHEKeyExchange implements KeyExchangeInterface
      * 使用服务器公钥和客户端私钥计算共享密钥
      *
      * @return string 预主密钥
-     * @throws \RuntimeException 如果计算失败
+     * @throws InvalidParameterException 如果参数缺失
+     * @throws KeyGenerationException 如果计算失败
      */
     public function computePreMasterSecret(): string
     {
         if (empty($this->clientPrivateKey) || empty($this->serverPublicKey) || empty($this->p)) {
-            throw new \RuntimeException('Missing parameters for computing pre-master secret');
+            throw new InvalidParameterException('Missing parameters for computing pre-master secret');
         }
         
         // 这里应该使用服务器公钥和客户端私钥计算DH共享密钥
@@ -183,12 +187,12 @@ class DHEKeyExchange implements KeyExchangeInterface
             ]);
             
             if ($privateKey === false) {
-                throw new \RuntimeException('Failed to create DH key for computation: ' . openssl_error_string());
+                throw new KeyGenerationException('Failed to create DH key for computation: ' . openssl_error_string());
             }
             
             $sharedSecret = openssl_dh_compute_key($serverKey, $privateKey);
             if ($sharedSecret === false) {
-                throw new \RuntimeException('Failed to compute DH shared secret: ' . openssl_error_string());
+                throw new KeyGenerationException('Failed to compute DH shared secret: ' . openssl_error_string());
             }
             
             $this->preMasterSecret = $this->binToHex($sharedSecret);

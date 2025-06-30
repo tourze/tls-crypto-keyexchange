@@ -4,9 +4,14 @@ declare(strict_types=1);
 
 namespace Tourze\TLSCryptoKeyExchange\KeyExchange;
 
+use Tourze\TLSCryptoKeyExchange\Exception\InvalidCurveException;
+use Tourze\TLSCryptoKeyExchange\Exception\InvalidParameterException;
+use Tourze\TLSCryptoKeyExchange\Exception\KeyGenerationException;
+use Tourze\TLSCryptoKeyExchange\Exception\InvalidKeyException;
+
 /**
  * TLS 1.3密钥交换实现
- * 
+ *
  * 参考RFC 8446 - TLS 1.3密钥交换机制
  * TLS 1.3中的密钥交换机制主要基于ECDHE
  */
@@ -66,12 +71,12 @@ class TLS13KeyExchange implements KeyExchangeInterface
      * @param string $group 密钥共享组类型
      * @param string $serverKeyShare 服务器密钥共享数据
      * @return self
-     * @throws \InvalidArgumentException 如果组类型不支持
+     * @throws InvalidCurveException 如果组类型不支持
      */
     public function setKeyShareParameters(string $group, string $serverKeyShare): self
     {
         if (!array_key_exists($group, self::$GROUP_MAP)) {
-            throw new \InvalidArgumentException("Unsupported key share group: $group");
+            throw new InvalidCurveException("Unsupported key share group: $group");
         }
         
         $this->group = $group;
@@ -103,12 +108,13 @@ class TLS13KeyExchange implements KeyExchangeInterface
      * 生成客户端密钥共享
      *
      * @return string 客户端密钥共享数据
-     * @throws \RuntimeException 如果生成失败
+     * @throws InvalidParameterException 如果参数未设置
+     * @throws KeyGenerationException 如果生成失败
      */
     public function generateKeyShare(): string
     {
         if (empty($this->group)) {
-            throw new \RuntimeException('Key share group not set');
+            throw new InvalidParameterException('Key share group not set');
         }
         
         $opensslGroup = self::$GROUP_MAP[$this->group];
@@ -140,13 +146,13 @@ class TLS13KeyExchange implements KeyExchangeInterface
             
             $key = openssl_pkey_new($config);
             if ($key === false) {
-                throw new \RuntimeException('Failed to create EC key: ' . openssl_error_string());
+                throw new KeyGenerationException('Failed to create EC key: ' . openssl_error_string());
             }
             
             // 导出私钥
             $result = openssl_pkey_export($key, $privateKeyPem);
             if ($result === false) {
-                throw new \RuntimeException('Failed to export EC private key: ' . openssl_error_string());
+                throw new KeyGenerationException('Failed to export EC private key: ' . openssl_error_string());
             }
             
             $this->clientPrivateKey = $privateKeyPem;
@@ -154,7 +160,7 @@ class TLS13KeyExchange implements KeyExchangeInterface
             // 获取公钥信息
             $keyDetails = openssl_pkey_get_details($key);
             if ($keyDetails === false) {
-                throw new \RuntimeException('Failed to get EC key details: ' . openssl_error_string());
+                throw new KeyGenerationException('Failed to get EC key details: ' . openssl_error_string());
             }
             
             // 提取公钥点
@@ -168,12 +174,14 @@ class TLS13KeyExchange implements KeyExchangeInterface
      * 计算共享密钥
      *
      * @return string 共享密钥
-     * @throws \RuntimeException 如果计算失败
+     * @throws InvalidParameterException 如果参数缺失
+     * @throws InvalidKeyException 如果密钥加载失败
+     * @throws KeyGenerationException 如果计算失败
      */
     public function computeSharedSecret(): string
     {
         if (empty($this->clientPrivateKey) || empty($this->serverKeyShare)) {
-            throw new \RuntimeException('Missing parameters for computing shared secret');
+            throw new InvalidParameterException('Missing parameters for computing shared secret');
         }
         
         // X25519和X448特殊处理
@@ -191,20 +199,20 @@ class TLS13KeyExchange implements KeyExchangeInterface
             // 加载服务器公钥
             $serverKey = openssl_pkey_get_public($this->serverKeyShare);
             if ($serverKey === false) {
-                throw new \RuntimeException('Failed to load server EC public key: ' . openssl_error_string());
+                throw new InvalidKeyException('Failed to load server EC public key: ' . openssl_error_string());
             }
             
             // 加载客户端私钥
             $clientKey = openssl_pkey_get_private($this->clientPrivateKey);
             if ($clientKey === false) {
-                throw new \RuntimeException('Failed to load client EC private key: ' . openssl_error_string());
+                throw new InvalidKeyException('Failed to load client EC private key: ' . openssl_error_string());
             }
             
             // 执行ECDH操作
             // 注意：实际项目中应使用专门的ECDH库
             $serverKeyDetails = openssl_pkey_get_details($serverKey);
             if ($serverKeyDetails === false) {
-                throw new \RuntimeException('Failed to get server EC key details: ' . openssl_error_string());
+                throw new KeyGenerationException('Failed to get server EC key details: ' . openssl_error_string());
             }
             
             // 模拟共享密钥计算
@@ -244,12 +252,12 @@ class TLS13KeyExchange implements KeyExchangeInterface
      * 用于在ClientHello扩展中发送
      *
      * @return string 格式化的密钥共享扩展数据
-     * @throws \RuntimeException 如果密钥共享未生成
+     * @throws InvalidParameterException 如果密钥共享未生成
      */
     public function formatKeyShareExtension(): string
     {
         if (empty($this->clientKeyShare)) {
-            throw new \RuntimeException('Client key share not generated');
+            throw new InvalidParameterException('Client key share not generated');
         }
         
         // 获取组ID
@@ -265,7 +273,7 @@ class TLS13KeyExchange implements KeyExchangeInterface
      *
      * @param string $group 组名称
      * @return int 组ID
-     * @throws \InvalidArgumentException 如果组不支持
+     * @throws InvalidCurveException 如果组不支持
      */
     private function getGroupId(string $group): int
     {
@@ -278,7 +286,7 @@ class TLS13KeyExchange implements KeyExchangeInterface
         ];
         
         if (!isset($groupMap[$group])) {
-            throw new \InvalidArgumentException("Unknown group: $group");
+            throw new InvalidCurveException("Unknown group: $group");
         }
         
         return $groupMap[$group];
