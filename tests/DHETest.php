@@ -4,19 +4,23 @@ declare(strict_types=1);
 
 namespace Tourze\TLSCryptoKeyExchange\Tests;
 
+use PHPUnit\Framework\Attributes\CoversClass;
 use PHPUnit\Framework\TestCase;
 use Tourze\TLSCryptoKeyExchange\DHE;
 use Tourze\TLSCryptoKeyExchange\Exception\KeyExchangeException;
 
 /**
  * DHE 密钥交换算法测试
+ *
+ * @internal
  */
-class DHETest extends TestCase
+#[CoversClass(DHE::class)]
+final class DHETest extends TestCase
 {
     /**
      * 测试获取算法名称
      */
-    public function test_getName_returnsCorrectName(): void
+    public function testGetNameReturnsCorrectName(): void
     {
         $dhe = new DHE();
         $this->assertEquals('dhe', $dhe->getName());
@@ -25,10 +29,10 @@ class DHETest extends TestCase
     /**
      * 测试使用默认参数生成密钥对
      */
-    public function test_generateKeyPair_withDefaultParams_returnsValidKeyPair(): void
+    public function testGenerateKeyPairWithDefaultParamsReturnsValidKeyPair(): void
     {
         if (!extension_loaded('openssl')) {
-            $this->markTestSkipped('OpenSSL 扩展未加载，跳过测试');
+            self::fail('OpenSSL 扩展未加载');
         }
 
         $dhe = new DHE();
@@ -49,10 +53,10 @@ class DHETest extends TestCase
     /**
      * 测试使用自定义组参数生成密钥对
      */
-    public function test_generateKeyPair_withCustomGroup_returnsValidKeyPair(): void
+    public function testGenerateKeyPairWithCustomGroupReturnsValidKeyPair(): void
     {
         if (!extension_loaded('openssl')) {
-            $this->markTestSkipped('OpenSSL 扩展未加载，跳过测试');
+            self::fail('OpenSSL 扩展未加载');
         }
 
         $dhe = new DHE();
@@ -68,10 +72,10 @@ class DHETest extends TestCase
     /**
      * 测试使用无效组参数时，会回退到默认参数
      */
-    public function test_generateKeyPair_withInvalidGroup_fallsBackToDefaultGroup(): void
+    public function testGenerateKeyPairWithInvalidGroupFallsBackToDefaultGroup(): void
     {
         if (!extension_loaded('openssl')) {
-            $this->markTestSkipped('OpenSSL 扩展未加载，跳过测试');
+            self::fail('OpenSSL 扩展未加载');
         }
 
         $dhe = new DHE();
@@ -85,32 +89,32 @@ class DHETest extends TestCase
     /**
      * 测试计算共享密钥
      */
-    public function test_computeSharedSecret_withValidKeys_returnsValidSecret(): void
+    public function testComputeSharedSecretWithValidKeysReturnsValidSecret(): void
     {
         if (!extension_loaded('openssl')) {
-            $this->markTestSkipped('OpenSSL 扩展未加载，跳过测试');
+            self::fail('OpenSSL 扩展未加载');
         }
 
         $dhe = new DHE();
-        
+
         // 生成 Alice 的密钥对
         $aliceKeyPair = $dhe->generateKeyPair();
-        
+
         // 生成 Bob 的密钥对，使用相同的组
         $bobKeyPair = $dhe->generateKeyPair(['group' => $aliceKeyPair['group']]);
-        
+
         // Alice 计算共享密钥
         $aliceSharedSecret = $dhe->computeSharedSecret(
             $aliceKeyPair['privateKey'],
             $bobKeyPair['publicKey']
         );
-        
+
         // Bob 计算共享密钥
         $bobSharedSecret = $dhe->computeSharedSecret(
             $bobKeyPair['privateKey'],
             $aliceKeyPair['publicKey']
         );
-        
+
         // 验证 Alice 和 Bob 计算的共享密钥相同
         $this->assertEquals($aliceSharedSecret, $bobSharedSecret);
         $this->assertNotEmpty($aliceSharedSecret);
@@ -119,15 +123,15 @@ class DHETest extends TestCase
     /**
      * 测试使用无效私钥时抛出异常
      */
-    public function test_computeSharedSecret_withInvalidPrivateKey_throwsException(): void
+    public function testComputeSharedSecretWithInvalidPrivateKeyThrowsException(): void
     {
         if (!extension_loaded('openssl')) {
-            $this->markTestSkipped('OpenSSL 扩展未加载，跳过测试');
+            self::fail('OpenSSL 扩展未加载');
         }
 
         $dhe = new DHE();
         $keyPair = $dhe->generateKeyPair();
-        
+
         $this->expectException(KeyExchangeException::class);
         $dhe->computeSharedSecret(
             'invalid-private-key',
@@ -138,19 +142,19 @@ class DHETest extends TestCase
     /**
      * 测试使用无效公钥时抛出异常
      */
-    public function test_computeSharedSecret_withInvalidPublicKey_throwsException(): void
+    public function testComputeSharedSecretWithInvalidPublicKeyThrowsException(): void
     {
         if (!extension_loaded('openssl')) {
-            $this->markTestSkipped('OpenSSL 扩展未加载，跳过测试');
+            self::fail('OpenSSL 扩展未加载');
         }
 
         $dhe = new DHE();
         $keyPair = $dhe->generateKeyPair();
-        
+
         $this->expectException(KeyExchangeException::class);
         $dhe->computeSharedSecret(
             $keyPair['privateKey'],
             'invalid-public-key'
         );
     }
-} 
+}

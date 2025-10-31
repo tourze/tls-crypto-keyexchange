@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace Tourze\TLSCryptoKeyExchange;
 
 use Tourze\TLSCryptoKeyExchange\Contract\KeyExchangeInterface;
-use Tourze\TLSCryptoKeyExchange\Exception\KeyExchangeException;
+use Tourze\TLSCryptoKeyExchange\Exception\GenericKeyExchangeException;
 
 /**
  * DHE密钥交换算法实现
@@ -46,6 +46,8 @@ class DHE implements KeyExchangeInterface
 
     /**
      * 缓存的二进制素数，避免重复转换
+     *
+     * @var array<string, string>
      */
     private static $binary_primes = [];
 
@@ -55,16 +57,15 @@ class DHE implements KeyExchangeInterface
     private function hexToBinary(string $hex): string
     {
         $bin = @hex2bin($hex);
-        if ($bin === false) {
-            throw new KeyExchangeException('无法将十六进制字符串转换为二进制，可能包含无效的字符或长度为奇数');
+        if (false === $bin) {
+            throw new GenericKeyExchangeException('无法将十六进制字符串转换为二进制，可能包含无效的字符或长度为奇数');
         }
+
         return $bin;
     }
 
     /**
      * 获取密钥交换算法名称
-     *
-     * @return string
      */
     public function getName(): string
     {
@@ -74,9 +75,11 @@ class DHE implements KeyExchangeInterface
     /**
      * 生成密钥对
      *
-     * @param array $options 生成密钥对的选项
-     * @return array 包含私钥和公钥的数组
-     * @throws KeyExchangeException 如果生成密钥对失败
+     * @param array<string, mixed> $options 生成密钥对的选项
+     *
+     * @return array<string, mixed> 包含私钥和公钥的数组，可能包含其他算法特定的参数
+     *
+     * @throws GenericKeyExchangeException 如果生成密钥对失败
      */
     public function generateKeyPair(array $options = []): array
     {
@@ -84,7 +87,7 @@ class DHE implements KeyExchangeInterface
         $actualGroupName = $groupName; // Store the initially requested or default group name
 
         if (!extension_loaded('openssl')) {
-            throw new KeyExchangeException('OpenSSL扩展未加载，无法使用DHE');
+            throw new GenericKeyExchangeException('OpenSSL扩展未加载，无法使用DHE');
         }
 
         if (!isset(self::DH_STANDARD_GROUPS[$groupName])) {
@@ -108,18 +111,18 @@ class DHE implements KeyExchangeInterface
                 ],
             ]);
 
-            if ($dhPKeyResource === false) {
-                throw new KeyExchangeException('DHE密钥对生成失败 (pkey_new): ' . openssl_error_string());
+            if (false === $dhPKeyResource) {
+                throw new GenericKeyExchangeException('DHE密钥对生成失败 (pkey_new): ' . openssl_error_string());
             }
 
             $keyDetails = openssl_pkey_get_details($dhPKeyResource);
-            if ($keyDetails === false || !isset($keyDetails['dh'])) {
-                throw new KeyExchangeException('无法获取DHE密钥细节: ' . openssl_error_string());
+            if (false === $keyDetails || !isset($keyDetails['dh'])) {
+                throw new GenericKeyExchangeException('无法获取DHE密钥细节: ' . openssl_error_string());
             }
 
             $privateKeyPem = '';
             if (!openssl_pkey_export($dhPKeyResource, $privateKeyPem)) {
-                throw new KeyExchangeException('导出DHE私钥失败: ' . openssl_error_string());
+                throw new GenericKeyExchangeException('导出DHE私钥失败: ' . openssl_error_string());
             }
 
             $publicKeyPem = $keyDetails['key']; // This is the public key in PEM format
@@ -131,10 +134,10 @@ class DHE implements KeyExchangeInterface
                 'group' => $actualGroupName, // Return the actual group name used
                 'bits' => $bits,
             ];
-        } catch (KeyExchangeException $e) {
+        } catch (GenericKeyExchangeException $e) {
             throw $e;
         } catch (\Throwable $e) {
-            throw new KeyExchangeException('DHE密钥对生成一般性失败: ' . $e->getMessage(), 0, $e);
+            throw new GenericKeyExchangeException('DHE密钥对生成一般性失败: ' . $e->getMessage(), 0, $e);
         }
     }
 
@@ -142,47 +145,50 @@ class DHE implements KeyExchangeInterface
      * 计算共享密钥
      *
      * @param string $privateKeyPem 本方私钥 (PEM格式)
-     * @param string $publicKeyPem 对方公钥 (PEM格式)
-     * @param array $options 计算选项
+     * @param string $publicKeyPem  对方公钥 (PEM格式)
+     * @param array<string, mixed>  $options       计算选项
+     *
      * @return string 共享密钥
-     * @throws KeyExchangeException 如果计算共享密钥失败
+     *
+     * @throws GenericKeyExchangeException 如果计算共享密钥失败
      */
     public function computeSharedSecret(string $privateKeyPem, string $publicKeyPem, array $options = []): string
     {
         if (!extension_loaded('openssl')) {
-            throw new KeyExchangeException('OpenSSL扩展未加载，无法使用DHE');
+            throw new GenericKeyExchangeException('OpenSSL扩展未加载，无法使用DHE');
         }
 
         try {
             $localPrivKey = openssl_pkey_get_private($privateKeyPem);
-            if ($localPrivKey === false) {
-                throw new KeyExchangeException('加载DHE私钥失败: ' . openssl_error_string());
+            if (false === $localPrivKey) {
+                throw new GenericKeyExchangeException('加载DHE私钥失败: ' . openssl_error_string());
             }
 
             $peerPubKeyResource = openssl_pkey_get_public($publicKeyPem);
-            if ($peerPubKeyResource === false) {
-                throw new KeyExchangeException('加载DHE公钥失败: ' . openssl_error_string());
+            if (false === $peerPubKeyResource) {
+                throw new GenericKeyExchangeException('加载DHE公钥失败: ' . openssl_error_string());
             }
 
             $peerPubKeyDetails = openssl_pkey_get_details($peerPubKeyResource);
-            if ($peerPubKeyDetails === false || !isset($peerPubKeyDetails['dh']['pub_key'])) {
-                 throw new KeyExchangeException('无法获取对端DHE公钥详情: ' . openssl_error_string());
+            if (false === $peerPubKeyDetails || !isset($peerPubKeyDetails['dh']['pub_key'])) {
+                throw new GenericKeyExchangeException('无法获取对端DHE公钥详情: ' . openssl_error_string());
             }
             $peerPublicValue = $peerPubKeyDetails['dh']['pub_key']; // This is the actual Y_peer as binary
 
             // openssl_dh_compute_key expects the peer's public key value (not PEM)
             $sharedSecretRaw = openssl_dh_compute_key($peerPublicValue, $localPrivKey);
 
-            if ($sharedSecretRaw === false) {
-                throw new KeyExchangeException('DHE共享密钥计算失败 (dh_compute_key): ' . openssl_error_string());
+            if (false === $sharedSecretRaw) {
+                throw new GenericKeyExchangeException('DHE共享密钥计算失败 (dh_compute_key): ' . openssl_error_string());
             }
 
             $hashAlgorithm = $options['hash'] ?? self::DEFAULT_HASH;
+
             return hash($hashAlgorithm, $sharedSecretRaw, true);
-        } catch (KeyExchangeException $e) {
+        } catch (GenericKeyExchangeException $e) {
             throw $e;
         } catch (\Throwable $e) {
-            throw new KeyExchangeException('DHE共享密钥计算一般性失败: ' . $e->getMessage(), 0, $e);
+            throw new GenericKeyExchangeException('DHE共享密钥计算一般性失败: ' . $e->getMessage(), 0, $e);
         }
     }
 }

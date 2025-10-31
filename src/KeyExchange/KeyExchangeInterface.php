@@ -17,4 +17,4 @@ interface KeyExchangeInterface
      * @return string 预主密钥
      */
     public function getPreMasterSecret(): string;
-} 
+}

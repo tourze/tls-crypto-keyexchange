@@ -2,7 +2,9 @@
 
 namespace Tourze\TLSCryptoKeyExchange\Tests\KeyExchange;
 
+use PHPUnit\Framework\Attributes\CoversClass;
 use PHPUnit\Framework\TestCase;
+use Tourze\TLSCryptoKeyExchange\Exception\UnsupportedKeyExchangeException;
 use Tourze\TLSCryptoKeyExchange\KeyExchange\DHEKeyExchange;
 use Tourze\TLSCryptoKeyExchange\KeyExchange\ECDHEKeyExchange;
 use Tourze\TLSCryptoKeyExchange\KeyExchange\KeyExchangeFactory;
@@ -12,8 +14,11 @@ use Tourze\TLSCryptoKeyExchange\KeyExchange\TLS13KeyExchange;
 
 /**
  * 密钥交换工厂类测试
+ *
+ * @internal
  */
-class KeyExchangeFactoryTest extends TestCase
+#[CoversClass(KeyExchangeFactory::class)]
+final class KeyExchangeFactoryTest extends TestCase
 {
     /**
      * 测试创建RSA密钥交换实例
@@ -65,7 +70,7 @@ class KeyExchangeFactoryTest extends TestCase
      */
     public function testCreateUnsupportedTypeThrowsException(): void
     {
-        $this->expectException(\Tourze\TLSCryptoKeyExchange\Exception\UnsupportedKeyExchangeException::class);
+        $this->expectException(UnsupportedKeyExchangeException::class);
         $this->expectExceptionMessage('Unsupported key exchange type: INVALID');
 
         KeyExchangeFactory::create('INVALID');

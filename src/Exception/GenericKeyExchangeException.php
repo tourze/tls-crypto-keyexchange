@@ -5,8 +5,8 @@ declare(strict_types=1);
 namespace Tourze\TLSCryptoKeyExchange\Exception;
 
 /**
- * 密钥交换异常基类
+ * 通用密钥交换异常
  */
-abstract class KeyExchangeException extends \Exception
+class GenericKeyExchangeException extends KeyExchangeException
 {
 }
